@@ -40,15 +40,21 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!response.ok) {
                 throw new Error('Failed to fetch archives');
             }
-            const archives = await response.json();
-
+            const archiveDates = await response.json();
+    
             const archiveList = document.getElementById("archive-list");
             archiveList.innerHTML = "";
-
-            archives.forEach((archive) => {
+    
+            archiveDates.forEach((archive) => {
+                const date = new Date(archive.archive_date);
+                const day = String(date.getDate()).padStart(2, '0'); // Ensure 2 digits
+                const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+                const year = date.getFullYear();
+                const formattedDate = `${day}/${month}/${year}`;
+    
                 const li = document.createElement("li");
-                li.textContent = `${archive.item_name} (Quantity: ${archive.quantity}) - ${archive.username} at ${new Date(archive.timestamp).toLocaleString()}`;
-                li.onclick = () => openArchiveModal(archive.timestamp.split('T')[0]); // Open modal on click
+                li.textContent = formattedDate; // Display the formatted date
+                li.onclick = () => openArchiveModal(archive.archive_date); // Pass the original date to the modal
                 archiveList.appendChild(li);
             });
         } catch (error) {
@@ -60,9 +66,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // Open Archive Modal
-    async function openArchiveModal(day) {
+    async function openArchiveModal(date) {
         try {
-            const response = await fetch(`${API_BASE_URL}/archives?day=${day}`);
+            const response = await fetch(`${API_BASE_URL}/archive-details?date=${date}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch archive details');
             }
@@ -72,8 +78,14 @@ document.addEventListener('DOMContentLoaded', function () {
             const modalDay = document.getElementById("modal-day");
             const modalRequestsList = document.getElementById("modal-requests-list");
     
-            modalDay.textContent = day;
-            modalRequestsList.innerHTML = "";
+            // Format the date as day/month/year
+            const formattedDate = new Date(date);
+            const day = String(formattedDate.getDate()).padStart(2, '0');
+            const month = String(formattedDate.getMonth() + 1).padStart(2, '0');
+            const year = formattedDate.getFullYear();
+            modalDay.textContent = `${day}/${month}/${year}`; // Display the formatted date
+    
+            modalRequestsList.innerHTML = ""; // Clear previous details
     
             archiveDetails.forEach((request) => {
                 const li = document.createElement("li");
@@ -81,12 +93,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 modalRequestsList.appendChild(li);
             });
     
-            modal.style.display = "block";
+            modal.style.display = "block"; // Show the modal
         } catch (error) {
             console.error('Error opening archive modal:', error);
         }
     }
-
     // Close Modal
     document.querySelector(".close").onclick = function () {
         document.getElementById("archive-modal").style.display = "none";
