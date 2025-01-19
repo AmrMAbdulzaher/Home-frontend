@@ -23,8 +23,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 row.innerHTML = `
                     <td>${request.quantity}</td>
                     <td>${request.item_name}</td>
-                    <td>${request.username}</td> <!-- Display username -->
-                    <td>${new Date(request.timestamp).toLocaleString()}</td>
+                    <td>${request.username}</td>
+                    <td>${formatTimestamp(request.local_timestamp)}</td> <!-- Use local_timestamp -->
                 `;
                 tbody.appendChild(row);
             });
@@ -43,21 +43,27 @@ document.addEventListener('DOMContentLoaded', function () {
             const archiveDates = await response.json();
     
             const archiveList = document.getElementById("archive-list");
-            archiveList.innerHTML = "";
+            const noArchivesMessage = document.getElementById("no-archives-message"); // Get the message element
     
-            archiveDates.forEach((archive) => {
-                const li = document.createElement("li");
-                li.textContent = archive.archive_date; // Display the formatted date
-                li.onclick = () => openArchiveModal(archive.archive_date); // Pass the formatted date to the modal
-                archiveList.appendChild(li);
-            });
+            archiveList.innerHTML = ""; // Clear previous items
+    
+            if (archiveDates.length === 0) {
+                noArchivesMessage.style.display = "block"; // Show the message
+            } else {
+                noArchivesMessage.style.display = "none"; // Hide the message
+                archiveDates.forEach((archive) => {
+                    const formattedDate = formatDate(archive.archive_date); // Format as DD/MM/YYYY for display
+    
+                    const li = document.createElement("li");
+                    li.textContent = formattedDate; // Display the formatted date
+                    li.onclick = () => openArchiveModal(archive.archive_date); // Pass the original date (YYYY-MM-DD) to the modal
+                    archiveList.appendChild(li);
+                });
+            }
         } catch (error) {
             console.error('Error loading archives:', error);
         }
     }
-
-
-
 
     // Open Archive Modal
     async function openArchiveModal(date) {
@@ -74,15 +80,23 @@ document.addEventListener('DOMContentLoaded', function () {
             const modalDay = document.getElementById("modal-day");
             const modalRequestsList = document.getElementById("modal-requests-list");
     
-            modalDay.textContent = date; // Display the selected date
+            // Format the date as DD/MM/YYYY for display
+            const formattedDate = formatDate(date);
+            modalDay.textContent = formattedDate; // Display the formatted date
             modalRequestsList.innerHTML = ""; // Clear previous details
     
             if (archiveDetails.length === 0) {
-                modalRequestsList.innerHTML = "<li>No requests found for this date.</li>";
+                // Display a message if no requests are found
+                const li = document.createElement("li");
+                li.textContent = "No requests found for this date.";
+                modalRequestsList.appendChild(li);
             } else {
+                // Display each request in the modal
                 archiveDetails.forEach((request) => {
                     const li = document.createElement("li");
-                    li.textContent = `${request.item_name} (Quantity: ${request.quantity}) - Requested by ${request.username} at ${new Date(request.timestamp).toLocaleString()}`;
+                    // Format the timestamp as DD/MM/YYYY, HH:MM:SS
+                    const formattedTimestamp = formatTimestamp(request.timestamp);
+                    li.textContent = `${request.item_name} (Quantity: ${request.quantity}) - Requested by ${request.username} at ${formattedTimestamp}`;
                     modalRequestsList.appendChild(li);
                 });
             }
@@ -116,3 +130,26 @@ document.addEventListener('DOMContentLoaded', function () {
     loadTodayRequests();
     loadArchives();
 });
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0'); // Ensure 2 digits
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+}
+
+function formatTimestamp(timestamp) {
+    const date = new Date(timestamp);
+    const options = {
+        timeZone: "Africa/Cairo", // Convert to Africa/Cairo timezone
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true,
+    };
+    return new Intl.DateTimeFormat("en-GB", options).format(date); // Format as DD/MM/YYYY, HH:MM:SS AM/PM
+}
