@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <td>${request.quantity}</td>
                     <td>${request.item_name}</td>
                     <td>${request.username}</td>
-                    <td>${formatTimestamp(request.timestamp)}</td> <!-- Format the timestamp -->
+                    <td>${formatTimestamp(request.local_timestamp)}</td> <!-- Use local_timestamp -->
                 `;
                 tbody.appendChild(row);
             });
@@ -64,9 +64,6 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Error loading archives:', error);
         }
     }
-
-
-
 
     // Open Archive Modal
     async function openArchiveModal(date) {
@@ -132,7 +129,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // Load data on page load
     loadTodayRequests();
     loadArchives();
-
 });
 
 function formatDate(dateString) {
@@ -145,12 +141,15 @@ function formatDate(dateString) {
 
 function formatTimestamp(timestamp) {
     const date = new Date(timestamp);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    const hours = String(date.getHours() % 12 || 12).padStart(2, '0'); // Convert to 12-hour format
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
-    const ampm = date.getHours() >= 12 ? 'PM' : 'AM';
-    return `${day}/${month}/${year}, ${hours}:${minutes}:${seconds} ${ampm}`;
+    const options = {
+        timeZone: "Africa/Cairo", // Convert to Africa/Cairo timezone
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true,
+    };
+    return new Intl.DateTimeFormat("en-GB", options).format(date); // Format as DD/MM/YYYY, HH:MM:SS AM/PM
 }
