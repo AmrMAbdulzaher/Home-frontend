@@ -46,8 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
             archiveList.innerHTML = "";
     
             archiveDates.forEach((archive) => {
-                const date = new Date(archive.archive_date);
-                const formattedDate = formatDate(date); // Format as DD/MM/YYYY
+                const formattedDate = formatDate(archive.archive_date); // Format as DD/MM/YYYY
     
                 const li = document.createElement("li");
                 li.textContent = formattedDate; // Display the formatted date
@@ -78,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const modalRequestsList = document.getElementById("modal-requests-list");
     
             // Format the date as DD/MM/YYYY
-            const formattedDate = formatDate(new Date(date));
+            const formattedDate = formatDate(date);
             modalDay.textContent = formattedDate; // Display the formatted date
             modalRequestsList.innerHTML = ""; // Clear previous details
     
@@ -87,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 archiveDetails.forEach((request) => {
                     const li = document.createElement("li");
-                    li.textContent = `${request.item_name} (Quantity: ${request.quantity}) - Requested by ${request.username} at ${formatDate(new Date(request.timestamp))}`;
+                    li.textContent = `${request.item_name} (Quantity: ${request.quantity}) - Requested by ${request.username} at ${formatDate(request.timestamp)}`;
                     modalRequestsList.appendChild(li);
                 });
             }
@@ -121,10 +120,12 @@ document.addEventListener('DOMContentLoaded', function () {
     loadTodayRequests();
     loadArchives();
 
-    function formatDate(date) {
-        const day = String(date.getDate()).padStart(2, '0'); // Ensure 2 digits
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
-    }
 });
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0'); // Ensure 2 digits
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+}
