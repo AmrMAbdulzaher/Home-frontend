@@ -62,11 +62,13 @@ document.addEventListener('DOMContentLoaded', function () {
     // Open Archive Modal
     async function openArchiveModal(date) {
         try {
+            console.log("Fetching archive details for date:", date); // Debugging log
             const response = await fetch(`${API_BASE_URL}/archive-details?date=${date}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch archive details');
             }
             const archiveDetails = await response.json();
+            console.log("Archive details:", archiveDetails); // Debugging log
     
             const modal = document.getElementById("archive-modal");
             const modalDay = document.getElementById("modal-day");
@@ -75,11 +77,15 @@ document.addEventListener('DOMContentLoaded', function () {
             modalDay.textContent = date; // Display the selected date
             modalRequestsList.innerHTML = ""; // Clear previous details
     
-            archiveDetails.forEach((request) => {
-                const li = document.createElement("li");
-                li.textContent = `${request.item_name} (Quantity: ${request.quantity}) - Requested by ${request.username} at ${new Date(request.timestamp).toLocaleString()}`;
-                modalRequestsList.appendChild(li);
-            });
+            if (archiveDetails.length === 0) {
+                modalRequestsList.innerHTML = "<li>No requests found for this date.</li>";
+            } else {
+                archiveDetails.forEach((request) => {
+                    const li = document.createElement("li");
+                    li.textContent = `${request.item_name} (Quantity: ${request.quantity}) - Requested by ${request.username} at ${new Date(request.timestamp).toLocaleString()}`;
+                    modalRequestsList.appendChild(li);
+                });
+            }
     
             modal.style.display = "block"; // Show the modal
         } catch (error) {
