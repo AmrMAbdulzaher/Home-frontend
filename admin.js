@@ -1,18 +1,41 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const userRequests = JSON.parse(localStorage.getItem('userRequests')) || [];
-   // const archive = JSON.parse(localStorage.getItem('archive')) || {};
+    
+
+     // Fetch today's requests
+     async function loadTodayRequests() {
+        const response = await fetch(`${API_BASE_URL}/today-requests`);
+        const requests = await response.json();
+
+        const tbody = document.querySelector("#today-requests-list tbody");
+        tbody.innerHTML = "";
+
+        requests.forEach((request) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${request.quantity}</td>
+                <td>${request.item_name}</td>
+                <td>${request.username}</td>
+                <td>${new Date(request.timestamp).toLocaleString()}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
 
 
-    const archive = JSON.parse(localStorage.getItem('archive')) || {
-        "16/01/2025": [
-            { item: "Cool PC", quantity: 2, username: "Amr", time: "19/01/2025 12:18 PM (GMT+2)" },
-            { item: "Chips", quantity: 1, username: "Amr", time: "19/01/2025 12:30 PM (GMT+2)" }
-        ],
-        "17/01/2025": [
-            { item: "Oreo", quantity: 1, username: "Karim", time: "19/01/2025 02:50 PM (GMT+2)" }
-        ]
-    };
+ // Fetch archives
+ async function loadArchives() {
+    const response = await fetch(`${API_BASE_URL}/archives`);
+    const archives = await response.json();
 
+    const archiveList = document.getElementById("archive-list");
+    archiveList.innerHTML = "";
+
+    archives.forEach((archive) => {
+        const li = document.createElement("li");
+        li.textContent = `${archive.item_name} (Quantity: ${archive.quantity}) - ${archive.username} at ${new Date(archive.timestamp).toLocaleString()}`;
+        archiveList.appendChild(li);
+    });
+}
     // Check if the user is logged in
     if (!sessionStorage.getItem("username")) {
         window.location.href = "../"; // Redirect to login if not logged in
@@ -25,17 +48,8 @@ document.addEventListener('DOMContentLoaded', function () {
     loadArchive();
 
     // Mark Request as Purchased
-    function markAsPurchased(button, requestIndex) {
-        button.textContent = 'Purchased';
-        button.disabled = true;
-
-        // Mark request as purchased in the userRequests array
-        userRequests[requestIndex].purchased = true;
-
-        // Save the updated userRequests to localStorage
-        localStorage.setItem('userRequests', JSON.stringify(userRequests));
-    }
-
+   
+/*
     // Load User Requests
     function loadUserRequests() {
         const userRequestsList = document.getElementById('today-requests-list').getElementsByTagName('tbody')[0];
@@ -98,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (event.target === modal) {
             modal.style.display = "none";
         }
-    });
+    });*/
 
     // Logout functionality
     document.getElementById('logout').onclick = function () {

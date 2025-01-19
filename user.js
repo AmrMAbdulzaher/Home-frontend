@@ -90,79 +90,39 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // Handle form submission (save to localStorage)
-    const orderForm = document.getElementById("orderForm");
-    const confirmationMessage = document.getElementById("confirmation-message");
-
-    orderForm.addEventListener("submit", function (e) {
-        e.preventDefault();
-        const items = [];
-        const username = sessionStorage.getItem("username"); // Get the current logged-in user
-        let hasError = false;
-
-        // Get all items from the form
-        const orderItems = document.querySelectorAll(".order-item");
-
-        orderItems.forEach((item) => {
-            const itemNameInput = item.querySelector(".item-name");
-            const itemQuantityInput = item.querySelector(".item-quantity");
-            const itemName = itemNameInput.value.trim();
-            const itemQuantity = itemQuantityInput.value.trim();
-
-            // Validate item name (letters, spaces, and optional symbols)
-            if (!/^[a-zA-Z\s\-.,'()]+$/.test(itemName)) {
-                hasError = true;
-                itemNameInput.style.border = "1px solid red";
-                confirmationMessage.textContent = "Item name can only contain letters, spaces, and symbols like -.,'().";
-                confirmationMessage.style.color = "red";
-            } else {
-                itemNameInput.style.border = ""; // Reset border if valid
-            }
-
-            // Validate item quantity (must be a positive number)
-            if (!itemQuantity || isNaN(itemQuantity) || parseInt(itemQuantity) <= 0) {
-                hasError = true;
-                itemQuantityInput.style.border = "1px solid red";
-                confirmationMessage.textContent = "Quantity must be a positive number.";
-                confirmationMessage.style.color = "red";
-            } else {
-                itemQuantityInput.style.border = ""; // Reset border if valid
-            }
-
-            if (!hasError) {
-                items.push({ itemName, itemQuantity });
-            }
-        });
-
-        if (hasError) {
-            return; // Stop submission if there are errors
-        }
-
-        // Store orders in localStorage (adding the current username and timestamp)
-        if (items.length > 0) {
-            try {
-                const existingOrders = JSON.parse(localStorage.getItem("userRequests")) || [];
-                const timestamp = new Date().toLocaleString(); // Get current date and time
-                existingOrders.push({
-                    username,
-                    timestamp,
-                    items,
-                });
-                localStorage.setItem("userRequests", JSON.stringify(existingOrders));
-
-                confirmationMessage.textContent = "Order added successfully!";
-                confirmationMessage.style.color = "green";
-                orderForm.reset();
-            } catch (error) {
-                console.error("Error saving to localStorage:", error);
-                confirmationMessage.textContent = "An error occurred while saving your order. Please try again.";
-                confirmationMessage.style.color = "red";
-            }
-        } else {
-            confirmationMessage.textContent = "Please provide both item name and quantity.";
-            confirmationMessage.style.color = "red";
-        }
-    });
+     // Handle form submission (save to backend)
+     const orderForm = document.getElementById("orderForm");
+     const confirmationMessage = document.getElementById("confirmation-message");
+ 
+     orderForm.addEventListener("submit", async function (e) {
+         e.preventDefault();
+         const items = [];
+         const username = sessionStorage.getItem("username");
+ 
+         // Get all items from the form
+         const orderItems = document.querySelectorAll(".order-item");
+         orderItems.forEach((item) => {
+             const itemName = item.querySelector(".item-name").value;
+             const itemQuantity = item.querySelector(".item-quantity").value;
+             items.push({ itemName, itemQuantity });
+         });
+ 
+         const response = await fetch(`${API_BASE_URL}/submit-order`, {
+             method: "POST",
+             headers: { "Content-Type": "application/json" },
+             body: JSON.stringify({ username, items }),
+         });
+         const data = await response.json();
+ 
+         if (data.success) {
+             confirmationMessage.textContent = "Order submitted successfully!";
+             confirmationMessage.style.color = "green";
+             orderForm.reset();
+         } else {
+             confirmationMessage.textContent = "An error occurred. Please try again.";
+             confirmationMessage.style.color = "red";
+         }
+     });
 
     // Handle logout
     logoutBtn.addEventListener("click", function () {
