@@ -1,6 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const logoutBtn = document.getElementById("logout");
-
 
      // Fetch today's requests
      async function loadTodayRequests() {
@@ -42,14 +40,14 @@ document.addEventListener('DOMContentLoaded', function () {
         window.location.href = "../"; // Redirect to login if not logged in
     }
 
-    // Load User Requests
-    loadUserRequests();
-
-    // Load Archive
-    loadArchive();
-
-    // Mark Request as Purchased
-   
+   // Load data on page load
+   loadTodayRequests();
+   loadArchives();
+  // Handle logout
+  logoutBtn.addEventListener("click", function () {
+    sessionStorage.removeItem("username");
+    window.location.href = "../";
+});
 /*
     // Load User Requests
     function loadUserRequests() {
@@ -116,10 +114,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });*/
 
     // Logout functionality
-    logoutBtn.addEventListener("click", function () {
-        sessionStorage.removeItem("username");
-        window.location.href = "../"; // Redirect to login page
-    });
+    
 });
 
 
