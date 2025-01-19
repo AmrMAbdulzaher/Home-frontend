@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', function () {
         window.location.href = "../"; // Redirect to login if not logged in
     }
 
-    // Fetch today's requests
     async function loadTodayRequests() {
         try {
             const response = await fetch(`${API_BASE_URL}/today-requests`);
@@ -15,16 +14,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 throw new Error('Failed to fetch today\'s requests');
             }
             const requests = await response.json();
-
+    
             const tbody = document.querySelector("#today-requests-list tbody");
             tbody.innerHTML = "";
-
+    
             requests.forEach((request) => {
                 const row = document.createElement("tr");
                 row.innerHTML = `
                     <td>${request.quantity}</td>
                     <td>${request.item_name}</td>
-                    <td>${request.username}</td>
+                    <td>${request.username}</td> <!-- Display username -->
                     <td>${new Date(request.timestamp).toLocaleString()}</td>
                 `;
                 tbody.appendChild(row);
@@ -57,6 +56,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+
+
+
     // Open Archive Modal
     async function openArchiveModal(day) {
         try {
@@ -65,20 +67,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 throw new Error('Failed to fetch archive details');
             }
             const archiveDetails = await response.json();
-
+    
             const modal = document.getElementById("archive-modal");
             const modalDay = document.getElementById("modal-day");
             const modalRequestsList = document.getElementById("modal-requests-list");
-
+    
             modalDay.textContent = day;
             modalRequestsList.innerHTML = "";
-
+    
             archiveDetails.forEach((request) => {
                 const li = document.createElement("li");
-                li.textContent = `${request.item_name} (Quantity: ${request.quantity}) - ${request.username} at ${new Date(request.timestamp).toLocaleString()}`;
+                li.textContent = `${request.item_name} (Quantity: ${request.quantity}) - Requested by ${request.username} at ${new Date(request.timestamp).toLocaleString()}`;
                 modalRequestsList.appendChild(li);
             });
-
+    
             modal.style.display = "block";
         } catch (error) {
             console.error('Error opening archive modal:', error);
