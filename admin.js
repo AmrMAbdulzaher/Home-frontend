@@ -46,15 +46,9 @@ document.addEventListener('DOMContentLoaded', function () {
             archiveList.innerHTML = "";
     
             archiveDates.forEach((archive) => {
-                const date = new Date(archive.archive_date);
-                const day = String(date.getDate()).padStart(2, '0'); // Ensure 2 digits
-                const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-                const year = date.getFullYear();
-                const formattedDate = `${day}/${month}/${year}`;
-    
                 const li = document.createElement("li");
-                li.textContent = formattedDate; // Display the formatted date
-                li.onclick = () => openArchiveModal(archive.archive_date); // Pass the original date to the modal
+                li.textContent = archive.archive_date; // Display the date only
+                li.onclick = () => openArchiveModal(archive.archive_date); // Open modal on click
                 archiveList.appendChild(li);
             });
         } catch (error) {
@@ -78,13 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const modalDay = document.getElementById("modal-day");
             const modalRequestsList = document.getElementById("modal-requests-list");
     
-            // Format the date as day/month/year
-            const formattedDate = new Date(date);
-            const day = String(formattedDate.getDate()).padStart(2, '0');
-            const month = String(formattedDate.getMonth() + 1).padStart(2, '0');
-            const year = formattedDate.getFullYear();
-            modalDay.textContent = `${day}/${month}/${year}`; // Display the formatted date
-    
+            modalDay.textContent = date; // Display the selected date
             modalRequestsList.innerHTML = ""; // Clear previous details
     
             archiveDetails.forEach((request) => {
@@ -98,6 +86,7 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Error opening archive modal:', error);
         }
     }
+
     // Close Modal
     document.querySelector(".close").onclick = function () {
         document.getElementById("archive-modal").style.display = "none";
