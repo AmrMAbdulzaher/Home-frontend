@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Graphik+Arabic&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <h2>User Dashboard</h2>
+        <hr>
+        <br>
+        <form id="orderForm">
+            <div class="order-item">
+                <div class="order-input">
+                    <label for="item-name">Item Name:</label>
+                    <input type="text" class="item-name" required>
+                </div>
+                <div class="order-input">
+                    <label for="item-quantity">Quantity:</label>
+                    <input type="number" class="item-quantity" required>
+                    <span class="add-item"><i class="fas fa-plus"></i></span>
+                </div>
+            </div>
+            <button type="submit">Submit</button>
+            <div id="confirmation-message"></div>
+            <br>
+        </form>
+        <button id="logout">Logout</button>
+    </div>
+    <script src="../user.js"></script>
+</body>
+</html>
+
+

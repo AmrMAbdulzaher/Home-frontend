@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h2>Admin Dashboard</h2>
+        <hr>
+        <!-- Today's Requests Section -->
+        <div class="today-requests">
+            <h3>Today's Requests</h3>
+            <table id="today-requests-list">
+                <thead>
+                    <tr>
+                        <th>Quantity</th>
+                        <th>Item</th>
+                        <th>Username</th>
+                        <th>Time</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Requests will be dynamically inserted here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Archive Section -->
+        <div class="archive">
+            <h3>Archive</h3>
+            <ul class="archive-list" id="archive-list">
+                <!-- Archive items will be dynamically added here -->
+            </ul>
+        </div>
+
+        <button id="logout">Logout</button>
+    </div>
+
+    <!-- Archive Modal -->
+    <div id="archive-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Requests for <span id="modal-day"></span></h3>
+            <ul id="modal-requests-list">
+                <!-- Archive day requests will be displayed here -->
+            </ul>
+        </div>
+    </div>
+
+    <script src="../admin.js"></script>
+</body>
+</html>
