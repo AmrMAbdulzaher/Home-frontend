@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <td>${request.quantity}</td>
                     <td>${request.item_name}</td>
                     <td>${request.username}</td>
-                    <td>${formatTimestamp(request.local_timestamp)}</td> <!-- Use local_timestamp -->
+                    <td>${formatTimestamp(request.utc_timestamp)}</td> <!-- Use utc_timestamp -->
                 `;
                 tbody.appendChild(row);
             });
@@ -140,7 +140,7 @@ function formatDate(dateString) {
 }
 
 function formatTimestamp(timestamp) {
-    const date = new Date(timestamp);
+    const date = new Date(timestamp + "Z"); // Add "Z" to indicate UTC time
     const options = {
         timeZone: "Africa/Cairo", // Convert to Africa/Cairo timezone
         day: "2-digit",
