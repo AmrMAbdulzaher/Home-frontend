@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 archiveDetails.forEach((request) => {
                     const li = document.createElement("li");
-                    li.textContent = `${request.item_name} (Quantity: ${request.quantity}) - Requested by ${request.username} at ${formatTimestamp(request.timestamp)}`;
+                    li.textContent = `${request.item_name} (Quantity: ${request.quantity}) - Requested by ${request.username} at ${new Date(request.timestamp).toLocaleString()}`;
                     modalRequestsList.appendChild(li);
                 });
             }
