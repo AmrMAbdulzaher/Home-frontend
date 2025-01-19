@@ -46,9 +46,12 @@ document.addEventListener('DOMContentLoaded', function () {
             archiveList.innerHTML = "";
     
             archiveDates.forEach((archive) => {
+                const date = new Date(archive.archive_date);
+                const formattedDate = formatDate(date); // Format as DD/MM/YYYY
+    
                 const li = document.createElement("li");
-                li.textContent = archive.archive_date; // Display the formatted date
-                li.onclick = () => openArchiveModal(archive.archive_date); // Pass the formatted date to the modal
+                li.textContent = formattedDate; // Display the formatted date
+                li.onclick = () => openArchiveModal(archive.archive_date); // Pass the original date (YYYY-MM-DD) to the modal
                 archiveList.appendChild(li);
             });
         } catch (error) {
@@ -74,7 +77,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const modalDay = document.getElementById("modal-day");
             const modalRequestsList = document.getElementById("modal-requests-list");
     
-            modalDay.textContent = date; // Display the formatted date
+            // Format the date as DD/MM/YYYY
+            const formattedDate = formatDate(new Date(date));
+            modalDay.textContent = formattedDate; // Display the formatted date
             modalRequestsList.innerHTML = ""; // Clear previous details
     
             if (archiveDetails.length === 0) {
@@ -82,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 archiveDetails.forEach((request) => {
                     const li = document.createElement("li");
-                    li.textContent = `${request.item_name} (Quantity: ${request.quantity}) - Requested by ${request.username} at ${request.timestamp}`;
+                    li.textContent = `${request.item_name} (Quantity: ${request.quantity}) - Requested by ${request.username} at ${formatDate(new Date(request.timestamp))}`;
                     modalRequestsList.appendChild(li);
                 });
             }
@@ -115,4 +120,11 @@ document.addEventListener('DOMContentLoaded', function () {
     // Load data on page load
     loadTodayRequests();
     loadArchives();
+
+    function formatDate(date) {
+        const day = String(date.getDate()).padStart(2, '0'); // Ensure 2 digits
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
 });
