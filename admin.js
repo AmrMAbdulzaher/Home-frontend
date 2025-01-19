@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
             archiveList.innerHTML = "";
     
             archiveDates.forEach((archive) => {
-                const formattedDate = formatDate(archive.archive_date); // Format as DD/MM/YYYY
+                const formattedDate = formatDate(archive.archive_date); // Format as DD/MM/YYYY for display
     
                 const li = document.createElement("li");
                 li.textContent = formattedDate; // Display the formatted date
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const modalDay = document.getElementById("modal-day");
             const modalRequestsList = document.getElementById("modal-requests-list");
     
-            // Format the date as DD/MM/YYYY
+            // Format the date as DD/MM/YYYY for display
             const formattedDate = formatDate(date);
             modalDay.textContent = formattedDate; // Display the formatted date
             modalRequestsList.innerHTML = ""; // Clear previous details
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 archiveDetails.forEach((request) => {
                     const li = document.createElement("li");
-                    li.textContent = `${request.item_name} (Quantity: ${request.quantity}) - Requested by ${request.username} at ${formatDate(request.timestamp)}`;
+                    li.textContent = `${request.item_name} (Quantity: ${request.quantity}) - Requested by ${request.username} at ${new Date(request.timestamp).toLocaleString()}`;
                     modalRequestsList.appendChild(li);
                 });
             }
