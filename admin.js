@@ -47,8 +47,8 @@ document.addEventListener('DOMContentLoaded', function () {
     
             archiveDates.forEach((archive) => {
                 const li = document.createElement("li");
-                li.textContent = archive.archive_date; // Display the date only
-                li.onclick = () => openArchiveModal(archive.archive_date); // Open modal on click
+                li.textContent = archive.archive_date; // Display the formatted date
+                li.onclick = () => openArchiveModal(archive.archive_date); // Pass the formatted date to the modal
                 archiveList.appendChild(li);
             });
         } catch (error) {
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const modalDay = document.getElementById("modal-day");
             const modalRequestsList = document.getElementById("modal-requests-list");
     
-            modalDay.textContent = date; // Display the selected date
+            modalDay.textContent = date; // Display the formatted date
             modalRequestsList.innerHTML = ""; // Clear previous details
     
             if (archiveDetails.length === 0) {
@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 archiveDetails.forEach((request) => {
                     const li = document.createElement("li");
-                    li.textContent = `${request.item_name} (Quantity: ${request.quantity}) - Requested by ${request.username} at ${new Date(request.timestamp).toLocaleString()}`;
+                    li.textContent = `${request.item_name} (Quantity: ${request.quantity}) - Requested by ${request.username} at ${request.timestamp}`;
                     modalRequestsList.appendChild(li);
                 });
             }
