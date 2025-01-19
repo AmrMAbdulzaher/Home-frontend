@@ -180,6 +180,10 @@ button[disabled] {
   text-align: center;
   margin-bottom: 20px;
 }
+#register-error-message {
+  color: red;
+  margin-top: 10px;
+}
 
 
 /* Green "+" Button Styling */

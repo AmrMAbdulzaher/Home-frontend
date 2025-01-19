@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
-    
+    const logoutBtn = document.getElementById("logout");
+
 
      // Fetch today's requests
      async function loadTodayRequests() {
@@ -115,10 +116,10 @@ document.addEventListener('DOMContentLoaded', function () {
     });*/
 
     // Logout functionality
-    document.getElementById('logout').onclick = function () {
-        sessionStorage.removeItem('username');
-        window.location.href = '../'; // Redirect to login page
-    }
+    logoutBtn.addEventListener("click", function () {
+        sessionStorage.removeItem("username");
+        window.location.href = "../"; // Redirect to login page
+    });
 });
 
 
