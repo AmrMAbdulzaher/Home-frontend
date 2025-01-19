@@ -22,7 +22,7 @@ document.getElementById('registerForm').addEventListener('submit', async (event)
 
     try {
         // Send a POST request to the /register endpoint
-        const response = await fetch('/register', {
+        const response = await fetch('https://home-backend-flame.vercel.app/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

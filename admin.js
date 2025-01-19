@@ -1,120 +1,110 @@
 document.addEventListener('DOMContentLoaded', function () {
+    const API_BASE_URL = "https://home-backend-flame.vercel.app"; // Your deployed backend URL
+    const logoutBtn = document.getElementById("logout");
 
-     // Fetch today's requests
-     async function loadTodayRequests() {
-        const response = await fetch(`${API_BASE_URL}/today-requests`);
-        const requests = await response.json();
-
-        const tbody = document.querySelector("#today-requests-list tbody");
-        tbody.innerHTML = "";
-
-        requests.forEach((request) => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
-                <td>${request.quantity}</td>
-                <td>${request.item_name}</td>
-                <td>${request.username}</td>
-                <td>${new Date(request.timestamp).toLocaleString()}</td>
-            `;
-            tbody.appendChild(row);
-        });
-    }
-
-
- // Fetch archives
- async function loadArchives() {
-    const response = await fetch(`${API_BASE_URL}/archives`);
-    const archives = await response.json();
-
-    const archiveList = document.getElementById("archive-list");
-    archiveList.innerHTML = "";
-
-    archives.forEach((archive) => {
-        const li = document.createElement("li");
-        li.textContent = `${archive.item_name} (Quantity: ${archive.quantity}) - ${archive.username} at ${new Date(archive.timestamp).toLocaleString()}`;
-        archiveList.appendChild(li);
-    });
-}
     // Check if the user is logged in
     if (!sessionStorage.getItem("username")) {
         window.location.href = "../"; // Redirect to login if not logged in
     }
 
-   // Load data on page load
-   loadTodayRequests();
-   loadArchives();
-  // Handle logout
-  logoutBtn.addEventListener("click", function () {
-    sessionStorage.removeItem("username");
-    window.location.href = "../";
-});
-/*
-    // Load User Requests
-    function loadUserRequests() {
-        const userRequestsList = document.getElementById('today-requests-list').getElementsByTagName('tbody')[0];
-        userRequestsList.innerHTML = ''; // Clear current list
+    // Fetch today's requests
+    async function loadTodayRequests() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/today-requests`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch today\'s requests');
+            }
+            const requests = await response.json();
 
-        userRequests.forEach((request, index) => {
-            request.items.forEach(item => {
-                const row = userRequestsList.insertRow();
+            const tbody = document.querySelector("#today-requests-list tbody");
+            tbody.innerHTML = "";
+
+            requests.forEach((request) => {
+                const row = document.createElement("tr");
                 row.innerHTML = `
-                    <td>${item.itemQuantity}</td>
-                    <td>${item.itemName}</td>
+                    <td>${request.quantity}</td>
+                    <td>${request.item_name}</td>
                     <td>${request.username}</td>
-                    <td>${request.timestamp}</td>
-                    <td><button onclick="markAsPurchased(this, ${index})">Mark as Purchased</button></td>
+                    <td>${new Date(request.timestamp).toLocaleString()}</td>
                 `;
+                tbody.appendChild(row);
             });
-        });
+        } catch (error) {
+            console.error('Error loading today\'s requests:', error);
+        }
     }
 
-    // Load Archive
-    function loadArchive() {
-        const archiveList = document.getElementById('archive-list');
-        archiveList.innerHTML = ''; // Clear current archive list
+    // Fetch archives
+    async function loadArchives() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/archives`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch archives');
+            }
+            const archives = await response.json();
 
-        for (let day in archive) {
-            const dayItem = document.createElement('li');
-            dayItem.textContent = day;
-            dayItem.onclick = () => openArchiveModal(day);
-            archiveList.appendChild(dayItem);
+            const archiveList = document.getElementById("archive-list");
+            archiveList.innerHTML = "";
+
+            archives.forEach((archive) => {
+                const li = document.createElement("li");
+                li.textContent = `${archive.item_name} (Quantity: ${archive.quantity}) - ${archive.username} at ${new Date(archive.timestamp).toLocaleString()}`;
+                li.onclick = () => openArchiveModal(archive.timestamp.split('T')[0]); // Open modal on click
+                archiveList.appendChild(li);
+            });
+        } catch (error) {
+            console.error('Error loading archives:', error);
         }
     }
 
     // Open Archive Modal
-    function openArchiveModal(day) {
-        const modal = document.getElementById('archive-modal');
-        const modalRequestsList = document.getElementById('modal-requests-list');
-        const modalDay = document.getElementById('modal-day');
-        modalRequestsList.innerHTML = ''; // Clear previous requests
-        modalDay.textContent = day;
+    async function openArchiveModal(day) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/archives?day=${day}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch archive details');
+            }
+            const archiveDetails = await response.json();
 
-        archive[day].forEach(request => {
-            const listItem = document.createElement('li');
-            listItem.innerHTML = `
-                <strong>${request.item}</strong> (Quantity: ${request.quantity}) - Requested by ${request.username} at ${request.time}
-            `;
-            modalRequestsList.appendChild(listItem);
-        });
+            const modal = document.getElementById("archive-modal");
+            const modalDay = document.getElementById("modal-day");
+            const modalRequestsList = document.getElementById("modal-requests-list");
 
-        modal.style.display = 'block';
+            modalDay.textContent = day;
+            modalRequestsList.innerHTML = "";
+
+            archiveDetails.forEach((request) => {
+                const li = document.createElement("li");
+                li.textContent = `${request.item_name} (Quantity: ${request.quantity}) - ${request.username} at ${new Date(request.timestamp).toLocaleString()}`;
+                modalRequestsList.appendChild(li);
+            });
+
+            modal.style.display = "block";
+        } catch (error) {
+            console.error('Error opening archive modal:', error);
+        }
     }
 
     // Close Modal
-    document.querySelector('.close').onclick = function () {
-        document.getElementById('archive-modal').style.display = 'none';
-    }
+    document.querySelector(".close").onclick = function () {
+        document.getElementById("archive-modal").style.display = "none";
+    };
 
     // Close modal when clicking outside of it
-    document.addEventListener("click", function (event) {
+    window.onclick = function (event) {
         const modal = document.getElementById("archive-modal");
         if (event.target === modal) {
             modal.style.display = "none";
         }
-    });*/
+    };
 
     // Logout functionality
-    
+    logoutBtn.addEventListener("click", function () {
+        sessionStorage.removeItem("username");
+        window.location.href = "../"; // Redirect to login page
+    });
+
+    // Load data on page load
+    loadTodayRequests();
+    loadArchives();
 });
-
-

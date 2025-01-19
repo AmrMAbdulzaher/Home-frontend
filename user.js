@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+    const API_BASE_URL = "https://home-backend-flame.vercel.app"; // Replace with your backend URL
     const logoutBtn = document.getElementById("logout");
 
     // Check if the user is logged in
@@ -9,18 +10,18 @@ document.addEventListener("DOMContentLoaded", function () {
     // Function to manage "+" and "X" icon visibility
     function manageAddButtonVisibility() {
         const allRows = document.querySelectorAll(".order-item");
-    
+
         allRows.forEach((row, index) => {
             const addButton = row.querySelector(".add-item");
             const deleteButton = row.querySelector(".delete-item");
-    
+
             // Show "+" only for the last row
             if (index === allRows.length - 1) {
                 addButton.style.display = "inline"; // Show "+" for the last row
             } else {
                 addButton.style.display = "none"; // Hide "+" for other rows
             }
-    
+
             // Show "X" only for rows after the first one
             if (index === 0) {
                 deleteButton.style.display = "none"; // Hide "X" for the first row
@@ -29,7 +30,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
-    
 
     // Function to handle deleting an item row
     function deleteItemRow(deleteButton) {
@@ -90,39 +90,58 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-     // Handle form submission (save to backend)
-     const orderForm = document.getElementById("orderForm");
-     const confirmationMessage = document.getElementById("confirmation-message");
- 
-     orderForm.addEventListener("submit", async function (e) {
-         e.preventDefault();
-         const items = [];
-         const username = sessionStorage.getItem("username");
- 
-         // Get all items from the form
-         const orderItems = document.querySelectorAll(".order-item");
-         orderItems.forEach((item) => {
-             const itemName = item.querySelector(".item-name").value;
-             const itemQuantity = item.querySelector(".item-quantity").value;
-             items.push({ itemName, itemQuantity });
-         });
- 
-         const response = await fetch(`${API_BASE_URL}/submit-order`, {
-             method: "POST",
-             headers: { "Content-Type": "application/json" },
-             body: JSON.stringify({ username, items }),
-         });
-         const data = await response.json();
- 
-         if (data.success) {
-             confirmationMessage.textContent = "Order submitted successfully!";
-             confirmationMessage.style.color = "green";
-             orderForm.reset();
-         } else {
-             confirmationMessage.textContent = "An error occurred. Please try again.";
-             confirmationMessage.style.color = "red";
-         }
-     });
+    // Handle form submission (save to backend)
+    const orderForm = document.getElementById("orderForm");
+    const confirmationMessage = document.getElementById("confirmation-message");
+
+    orderForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const items = [];
+        const username = sessionStorage.getItem("username");
+
+        // Get all items from the form
+        const orderItems = document.querySelectorAll(".order-item");
+        orderItems.forEach((item) => {
+            const itemName = item.querySelector(".item-name").value;
+            const itemQuantity = item.querySelector(".item-quantity").value;
+            if (itemName && itemQuantity) {
+                items.push({ itemName, itemQuantity });
+            }
+        });
+
+        if (items.length === 0) {
+            confirmationMessage.textContent = "Please add at least one item.";
+            confirmationMessage.style.color = "red";
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/submit-order`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, items }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to submit order");
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+                confirmationMessage.textContent = "Order submitted successfully!";
+                confirmationMessage.style.color = "green";
+                orderForm.reset(); // Clear the form
+            } else {
+                confirmationMessage.textContent = "An error occurred. Please try again.";
+                confirmationMessage.style.color = "red";
+            }
+        } catch (error) {
+            console.error("Error submitting order:", error);
+            confirmationMessage.textContent = "An error occurred. Please try again.";
+            confirmationMessage.style.color = "red";
+        }
+    });
 
     // Handle logout
     logoutBtn.addEventListener("click", function () {
